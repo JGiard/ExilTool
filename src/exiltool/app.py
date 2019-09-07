@@ -1,20 +1,26 @@
-from flask import Flask, render_template
+from flask import Flask
 from injector import inject
 
-from exiltool.backend.router import ServiceRouter
+from exiltool.services.auth import AuthenticationService
 from exiltool.services.map import MapService
 from exiltool.services.script import ScriptService
 from exiltool.services.web import WebService
+from exiltool.setup.extensions import FlaskExtInstaller
+from exiltool.setup.service import ServiceInstaller
 
 
 class ExilApp:
     @inject
-    def __init__(self, flask: Flask, router: ServiceRouter):
+    def __init__(self, flask: Flask, services: ServiceInstaller, extensions: FlaskExtInstaller):
         self.flask = flask
-        self.router = router
+        self.services = services
+        self.extensions = extensions
 
     def install(self) -> Flask:
-        self.router.install(self.flask, MapService)
-        self.router.install(self.flask, ScriptService)
-        self.router.install(self.flask, WebService)
+        self.extensions.install_session(self.flask)
+        self.extensions.install_mongo(self.flask)
+        self.services.install(self.flask, MapService)
+        self.services.install(self.flask, ScriptService)
+        self.services.install(self.flask, WebService)
+        self.services.install(self.flask, AuthenticationService)
         return self.flask

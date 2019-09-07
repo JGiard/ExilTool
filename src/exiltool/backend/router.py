@@ -13,12 +13,13 @@ class ServiceRouter:
     def __init__(self, runner: ServiceRunner):
         self.runner = runner
 
-    def install(self, flask: Flask, cls):
+    def route(self, flask: Flask, cls):
         for method in self.find_routed_methods(cls):
             path = getattr(method, ROUTE_ATTR)
             methods = [getattr(method, ROUTE_METHOD_ATTR)]
+            endpoint = '{}.{}'.format(cls.__name__, method.__name__)
 
-            flask.route(path, methods=methods)(self.runner.wraps(cls, method))
+            flask.route(path, methods=methods, endpoint=endpoint)(self.runner.get_runner(cls, method))
 
     def find_routed_methods(self, cls) -> Iterable[Callable]:
         for name, method in inspect.getmembers(cls):

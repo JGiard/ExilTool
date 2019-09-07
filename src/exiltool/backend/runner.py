@@ -1,23 +1,32 @@
 from functools import wraps
+from inspect import signature
+from typing import Optional
 
 from flask import request
 from injector import Injector, inject
 from pyckson import serialize, parse
 
-from exiltool.backend.decorators import ROUTE_DATA_TYPE_ATTR
+from exiltool.backend.auth import AuthenticationProxy
+from exiltool.backend.decorators import NO_AUTH_ATTR
+from exiltool.model.user import User
 
 
 class ServiceRunner:
     @inject
-    def __init__(self, injector: Injector):
+    def __init__(self, injector: Injector, auth: AuthenticationProxy):
         self.injector = injector
+        self.auth = auth
 
-    def run(self, cls, method, *args, **kwargs):
+    def run(self, cls, method, flask_params: dict):
         instance = self.injector.create_object(cls)
-        if request.method == 'POST' and hasattr(method, ROUTE_DATA_TYPE_ATTR):
-            kwargs['data'] = parse(getattr(method, ROUTE_DATA_TYPE_ATTR), request.get_json(force=True))
+        user = None
+        if not getattr(method, NO_AUTH_ATTR, False):
+            user = self.auth.check_login()
 
-        reply = method(instance, *args, **kwargs)
+        reply = method(instance, flask_params, user)
+        return self.handle_reply(reply)
+
+    def handle_reply(self, reply):
         if reply is None:
             return '', 200
         elif isinstance(reply, dict):
@@ -27,9 +36,23 @@ class ServiceRunner:
         else:
             return serialize(reply)
 
-    def wraps(self, cls, method):
+    def get_runner(self, cls, method):
         @wraps(method)
-        def wrapper(*args, **kwargs):
-            return self.run(cls, method, *args, **kwargs)
+        def wrapper(**flask_params):
+            return self.run(cls, self.prepare(method), flask_params)
+
+        return wrapper
+
+    def prepare(self, method):
+        parameters = signature(method).parameters
+
+        @wraps(method)
+        def wrapper(instance, flask_params: dict, user: Optional[User]):
+            fargs = flask_params.copy()
+            if 'data' in parameters and request.method == 'POST':
+                fargs['data'] = parse(parameters['data'].annotation, request.get_json(force=True))
+            if user and 'user' in parameters and parameters['user'].annotation == User:
+                fargs['user'] = user
+            return method(instance, **fargs)
 
         return wrapper
