@@ -28,7 +28,7 @@ class ServiceRunner:
 
     def handle_reply(self, reply):
         if reply is None:
-            return '', 200
+            return '', 204
         elif isinstance(reply, dict):
             return reply
         elif isinstance(reply, str):
