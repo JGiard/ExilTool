@@ -24,3 +24,8 @@ class UserRepository:
     def create(self, username: str, password: str):
         user = User(username, generate_password_hash(password), False, str(uuid4()))
         self.collection.insert(serialize(user))
+
+    def get_by_apikey(self, apikey: str) -> Optional[User]:
+        doc = self.collection.find_one({'apikey': apikey})
+        if doc:
+            return parse(User, doc)

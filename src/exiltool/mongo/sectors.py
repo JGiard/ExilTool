@@ -45,7 +45,5 @@ class SectorsRepository:
         return Sector(galaxy, sector, ordered_places)
 
     def update_place(self, place: Place):
-        print(place)
-        print(self.collection)
         mongo_place = MongoPlace.from_place(place)
         self.collection.update({'_id': mongo_place.id}, serialize(mongo_place), upsert=True)
