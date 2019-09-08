@@ -2,7 +2,7 @@ from injector import inject
 from pyckson import parse, rename, serialize
 from pymongo.database import Database
 
-from exiltool.model.map import Place
+from exiltool.model.map import Place, Sector
 
 
 @rename(id='_id')
@@ -31,6 +31,18 @@ class SectorsRepository:
             return Place(galaxy, sector, position)
         mongo_place = parse(MongoPlace, doc)
         return mongo_place.place
+
+    def get_sector(self, galaxy: int, sector: int) -> Sector:
+        docs = self.collection.find({'place.galaxy': galaxy, 'place.sector': sector})
+        places = [parse(MongoPlace, doc).place for doc in docs]
+        places_by_pos = {place.position: place for place in places}
+        ordered_places = []
+        for i in range(1, 26):
+            if i in places_by_pos:
+                ordered_places.append(places_by_pos[i])
+            else:
+                ordered_places.append(Place(galaxy, sector, i))
+        return Sector(galaxy, sector, ordered_places)
 
     def update_place(self, place: Place):
         print(place)

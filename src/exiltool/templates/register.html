@@ -68,7 +68,6 @@
         $.post({
             url: '/api/register',
             data: JSON.stringify(data),
-            dataType: 'json',
             contentType: 'application/json'
         }).done(function () {
             $('#login').hide();
