@@ -33,6 +33,8 @@ class ServiceRunner:
             return reply
         elif isinstance(reply, str):
             return reply
+        elif isinstance(reply, tuple):
+            return reply
         else:
             return serialize(reply)
 

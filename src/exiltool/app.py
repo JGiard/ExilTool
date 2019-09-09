@@ -2,6 +2,7 @@ from flask import Flask
 from injector import inject
 
 from exiltool.services.auth import AuthenticationService
+from exiltool.services.health import HealthService
 from exiltool.services.map import MapService
 from exiltool.services.script import ScriptService
 from exiltool.services.web import WebService
@@ -23,4 +24,5 @@ class ExilApp:
         self.services.install(self.flask, ScriptService)
         self.services.install(self.flask, WebService)
         self.services.install(self.flask, AuthenticationService)
+        self.services.install(self.flask, HealthService)
         return self.flask
