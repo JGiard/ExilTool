@@ -19,7 +19,6 @@ class ExilApp:
 
     def install(self) -> Flask:
         self.extensions.install_session(self.flask)
-        self.extensions.install_mongo(self.flask)
         self.services.install(self.flask, MapService)
         self.services.install(self.flask, ScriptService)
         self.services.install(self.flask, WebService)

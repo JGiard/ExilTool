@@ -17,10 +17,3 @@ class FlaskExtInstaller:
         flask.config['SESSION_MONGODB'] = self.mongo
         flask.config['SESSION_MONGODB_DB'] = self.conf.mongo_db
         Session().init_app(flask)
-
-    def install_mongo(self, flask: Flask):
-        flask.config['MONGODB_SETTINGS'] = {
-            'db': self.conf.mongo_db,
-            'host': self.conf.mongo_host,
-            'port': self.conf.mongo_port
-        }
