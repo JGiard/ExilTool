@@ -5,5 +5,6 @@ setup(name='ExilTool',
       author='Jean Giard',
       packages=find_packages(where='src'),
       package_dir={'': 'src'},
+      package_data={'exiltool': ['templates/*']},
       install_requires=['injector', 'pymongo', 'pyckson', 'flask', 'flask-session']
       )
