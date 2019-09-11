@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from flask import Flask
 from flask_session import Session
 from injector import inject
@@ -16,4 +18,6 @@ class FlaskExtInstaller:
         flask.config['SESSION_TYPE'] = 'mongodb'
         flask.config['SESSION_MONGODB'] = self.mongo
         flask.config['SESSION_MONGODB_DB'] = self.conf.mongo_db
+        flask.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=2)
+        flask.config['SESSION_FILE_THRESHOLD'] = 100
         Session().init_app(flask)
