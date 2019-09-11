@@ -5,6 +5,18 @@
     <title>ExilTool</title>
 </head>
 <body>
-{% include 'menu.html' %}
+<div class="container">
+    {% include 'menu.html' %}
+    <h1>Bienvenue sur ExilTool</h1>
+    <p>Pour pouvoir participer au site vous devez installer le plugin <a href="https://www.tampermonkey.net/">Tampermonkey</a>
+        sur votre navigateur.</p>
+    <p> Ensuite utilisez le lien <a href="/exiltool.user.js">Script</a> dans le menu.<br/>
+        Tampermonkey devrait détecter le script et vous proposer de l'installer.<br/>
+        Il vous faudra aussi autoriser l'envoi d'information lors de la première utilisation.</p>
+    <p>Le script permet d'automatiser l'envoie d'informations vers ExilTool. Pour le momment celà comprend :</p>
+    <ul>
+        <li>Stats des planètes visibles.</li>
+    </ul>
+</div>
 </body>
 </html>
