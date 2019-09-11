@@ -2,7 +2,7 @@ from injector import inject
 from pyckson import parse, rename, serialize
 from pymongo.database import Database
 
-from exiltool.model.map import Place, Sector
+from exiltool.map.model.domain import Place, Sector
 
 
 @rename(id='_id')

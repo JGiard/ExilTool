@@ -17,7 +17,7 @@
         .card {
             white-space: nowrap;
             margin: 0.5em;
-            width: 12em;
+            width: 14em;
         }
 
         .list-group-item {
@@ -58,8 +58,8 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">Terrain: {{ place.planet.land }}</li>
                                     <li class="list-group-item">Espace: {{ place.planet.space }}</li>
-                                    <li class="list-group-item">Minerai: {{ place.planet.mineral }}</li>
-                                    <li class="list-group-item">Hydrocarbure: {{ place.planet.hydrocarbon }}</li>
+                                    <li class="list-group-item">Minerai: {{ place.planet.mineral }} - {{ (place.planet.mineral_prod // 1000) | int }}k/h</li>
+                                    <li class="list-group-item">Hydro: {{ place.planet.hydrocarbon }} - {{ (place.planet.hydrocarbon_prod // 1000) | int }}k/h</li>
                                 </ul>
                             </div>
                         </div>

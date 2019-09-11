@@ -1,7 +1,8 @@
 from injector import inject
 
 from exiltool.backend.decorators import route
-from exiltool.model.map import Sector, PlacesUpdate
+from exiltool.map.model.domain import Sector
+from exiltool.map.model.js import PlacesUpdate
 from exiltool.mongo.sectors import SectorsRepository
 
 

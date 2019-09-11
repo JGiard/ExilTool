@@ -22,8 +22,3 @@ class Sector:
         self.galaxy = galaxy
         self.sector = sector
         self.places = places
-
-
-class PlacesUpdate:
-    def __init__(self, places: List[Place]):
-        self.places = places
