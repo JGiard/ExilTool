@@ -15,7 +15,10 @@ class ExilModule(Module):
     @provider
     @threadlocal
     def get_mongo(self, conf: Configuration) -> MongoClient:
-        return MongoClient(conf.mongo_host, conf.mongo_port, username=conf.mongo_user, password=conf.mongo_password)
+        if conf.mongo_uri:
+            return MongoClient(conf.mongo_uri)
+        else:
+            return MongoClient(conf.mongo_host, conf.mongo_port, username=conf.mongo_user, password=conf.mongo_password)
 
     @provider
     def get_database(self, client: MongoClient, conf: Configuration) -> Database:

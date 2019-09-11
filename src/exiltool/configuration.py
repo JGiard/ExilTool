@@ -8,3 +8,4 @@ class Configuration:
         self.mongo_db = os.environ.get('MONGO_DB', os.environ.get('MONGODB_ADDON_DB', 'exiltool'))
         self.mongo_user = os.environ.get('MONGO_USER', os.environ.get('MONGODB_ADDON_USER', None))
         self.mongo_password = os.environ.get('MONGO_PASSWORD', os.environ.get('MONGODB_ADDON_PASSWORD', None))
+        self.mongo_uri = os.environ.get('MONGO_URI', os.environ.get('MONGODB_ADDON_URI', None))
