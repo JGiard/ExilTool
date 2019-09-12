@@ -18,6 +18,15 @@
             white-space: nowrap;
             margin: 0.5em;
             width: 14em;
+            position: relative;
+        }
+        .number {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 0;
+            right: 0;
+            z-index: 20;
         }
 
         .list-group-item {
@@ -55,6 +64,9 @@
                     {% else %}
                         <div class="col">
                             <div class="card border-primary small">
+                                <div class="number">
+                                    {{  place.position }}
+                                </div>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">Terrain: {{ place.planet.land }}</li>
                                     <li class="list-group-item">Espace: {{ place.planet.space }}</li>
