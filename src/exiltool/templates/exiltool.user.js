@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ExilTool
 // @namespace    {{ site }}
-// @version      0.2.1
+// @version      0.2.2
 // @description  try to take over the world!
 // @author       You
 // @include      /^https://www.exxxxile.ovh/exile/map\?g=([0-9]+)&s=([0-9]+)/
@@ -45,9 +45,15 @@
             processLoc(i, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17], p[18], p[19], p[20]);
         }
 
+        var data = {
+            'places': newPlaces,
+            'galaxy': galaxy,
+            'sector': sector
+        };
+
         GM.xmlHttpRequest({
             url: '{{ site }}api/map/places',
-            data: JSON.stringify({'places': newPlaces}),
+            data: JSON.stringify(data),
             contentType: 'application/json',
             method: 'POST',
             headers: {

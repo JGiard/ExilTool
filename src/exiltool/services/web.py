@@ -3,12 +3,12 @@ from injector import inject
 
 from exiltool.backend.decorators import route, noauth
 from exiltool.map.converter import MapConverter
-from exiltool.mongo.sectors import SectorsRepository
+from exiltool.map.repository import MapRepository
 
 
 class WebService:
     @inject
-    def __init__(self, sectors: SectorsRepository, converter: MapConverter):
+    def __init__(self, sectors: MapRepository, converter: MapConverter):
         self.sectors = sectors
         self.converter = converter
 
@@ -26,7 +26,6 @@ class WebService:
     def register(self):
         return render_template('register.html')
 
-    @noauth
     @route('/map')
     def map(self):
         galaxy = int(request.args.get('g', 1))

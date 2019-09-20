@@ -1,5 +1,8 @@
+from typing import List
+
 from injector import inject
 from pyckson import parse, rename, serialize
+from pymongo import ReplaceOne
 from pymongo.database import Database
 
 from exiltool.map.model.domain import Place, Sector
@@ -20,7 +23,7 @@ class MongoPlace:
         return MongoPlace(MongoPlace.make_id(place.galaxy, place.sector, place.position), place)
 
 
-class SectorsRepository:
+class MapRepository:
     @inject
     def __init__(self, db: Database):
         self.collection = db['sectors']
@@ -44,6 +47,7 @@ class SectorsRepository:
                 ordered_places.append(Place(galaxy, sector, i))
         return Sector(galaxy, sector, ordered_places)
 
-    def update_place(self, place: Place):
-        mongo_place = MongoPlace.from_place(place)
-        self.collection.update({'_id': mongo_place.id}, serialize(mongo_place), upsert=True)
+    def update_places(self, places: List[Place]):
+        mongo_places = [MongoPlace.from_place(place) for place in places]
+        requests = [ReplaceOne({'_id': place.id}, serialize(place)) for place in mongo_places]
+        self.collection.bulk_write(requests)

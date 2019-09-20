@@ -25,5 +25,7 @@ class JsPlace:
 
 @autovalue
 class JsSector:
-    def __init__(self, places: List[JsPlace]):
+    def __init__(self, places: List[JsPlace], galaxy: Optional[int] = None, sector: Optional[int] = None):
         self.places = places
+        self.galaxy = galaxy
+        self.sector = sector

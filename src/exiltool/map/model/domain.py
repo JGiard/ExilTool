@@ -1,7 +1,10 @@
 from enum import Enum
 from typing import Optional, List
 
+from autovalue import autovalue
 
+
+@autovalue
 class Planet:
     def __init__(self, land: int, space: int, mineral: int, hydrocarbon: int, image: Optional[str] = '01'):
         self.land = land
@@ -20,6 +23,7 @@ class PlaceType(Enum):
     unknown = 6
 
 
+@autovalue
 class Place:
     def __init__(self, galaxy: int, sector: int, position: int,
                  category: Optional[PlaceType] = PlaceType.unknown,
@@ -31,6 +35,7 @@ class Place:
         self.planet = planet
 
 
+@autovalue
 class Sector:
     def __init__(self, galaxy: int, sector: int, places: List[Place]):
         self.galaxy = galaxy

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from exiltool.map.model.domain import Sector, Place, Planet, PlaceType
 from exiltool.map.model.js import JsPlace, JsPlanet
 from exiltool.map.model.ui import UiSector, UiPlace, UiPlanet
@@ -20,17 +22,19 @@ class MapConverter:
                         planet.image)
 
     def place_from_js(self, place: JsPlace) -> Place:
-        place_type = PlaceType.empty
+        place_type = PlaceType.planet
         if place.img == 'vortex':
             place_type = PlaceType.vortex
-        if place.img == 'asteroids':
+        elif place.img == 'asteroids':
             place_type = PlaceType.asteroids
-        if place.img == 'merchant':
+        elif place.img == 'merchant':
             place_type = PlaceType.merchant
-        if place.planet and place_type != PlaceType.merchant:
-            place_type = PlaceType.planet
-        planet = self.planet_from_js(place.planet, place.img) if place.planet else None
+        elif place.img == '' and not place.planet:
+            place_type = PlaceType.empty
+        planet = self.planet_from_js(place.planet, place.img) if place_type == PlaceType.planet else None
         return Place(place.galaxy, place.sector, place.position, place_type, planet)
 
-    def planet_from_js(self, planet: JsPlanet, img: str) -> Planet:
+    def planet_from_js(self, planet: Optional[JsPlanet], img: str) -> Planet:
+        if planet is None:
+            return Planet(-1, -1, -1, -1, img)
         return Planet(planet.land, planet.space, planet.mineral, planet.hydrocarbon, img)
