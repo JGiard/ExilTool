@@ -31,5 +31,5 @@ class WebService:
     def map(self):
         galaxy = int(request.args.get('g', 1))
         sector = int(request.args.get('s', 1))
-        sector = self.converter.convert(self.sectors.get_sector(galaxy, sector))
+        sector = self.converter.sector_to_ui(self.sectors.get_sector(galaxy, sector))
         return render_template('map.html', sector=sector)

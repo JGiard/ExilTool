@@ -3,7 +3,7 @@ from injector import inject
 
 from exiltool.services.auth import AuthenticationService
 from exiltool.services.health import HealthService
-from exiltool.services.map import MapService
+from exiltool.map.services.map import MapService
 from exiltool.services.script import ScriptService
 from exiltool.services.web import WebService
 from exiltool.setup.extensions import FlaskExtInstaller

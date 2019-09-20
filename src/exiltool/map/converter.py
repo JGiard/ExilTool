@@ -1,18 +1,36 @@
-from exiltool.map.model.domain import Sector, Place, Planet
+from exiltool.map.model.domain import Sector, Place, Planet, PlaceType
+from exiltool.map.model.js import JsPlace, JsPlanet
 from exiltool.map.model.ui import UiSector, UiPlace, UiPlanet
 from exiltool.map.tools import compute_prod
 
 
 class MapConverter:
-    def convert(self, sector: Sector) -> UiSector:
-        places = [self.convert_place(place) for place in sector.places]
+    def sector_to_ui(self, sector: Sector) -> UiSector:
+        places = [self.place_to_ui(place) for place in sector.places]
         return UiSector(sector.galaxy, sector.sector, places)
 
-    def convert_place(self, place: Place) -> UiPlace:
-        planet = self.convert_planet(place.planet) if place.planet else None
-        return UiPlace(place.position, planet)
+    def place_to_ui(self, place: Place) -> UiPlace:
+        planet = self.planet_to_ui(place.planet) if place.planet else None
+        return UiPlace(place.position, place.category.name, planet)
 
-    def convert_planet(self, planet: Planet) -> UiPlanet:
+    def planet_to_ui(self, planet: Planet) -> UiPlanet:
         return UiPlanet(planet.land, planet.space, planet.mineral, planet.hydrocarbon,
                         compute_prod(planet.land, planet.mineral),
-                        compute_prod(planet.land, planet.hydrocarbon))
+                        compute_prod(planet.land, planet.hydrocarbon),
+                        planet.image)
+
+    def place_from_js(self, place: JsPlace) -> Place:
+        place_type = PlaceType.empty
+        if place.img == 'vortex':
+            place_type = PlaceType.vortex
+        if place.img == 'asteroids':
+            place_type = PlaceType.asteroids
+        if place.img == 'merchant':
+            place_type = PlaceType.merchant
+        if place.planet and place_type != PlaceType.merchant:
+            place_type = PlaceType.planet
+        planet = self.planet_from_js(place.planet, place.img) if place.planet else None
+        return Place(place.galaxy, place.sector, place.position, place_type, planet)
+
+    def planet_from_js(self, planet: JsPlanet, img: str) -> Planet:
+        return Planet(planet.land, planet.space, planet.mineral, planet.hydrocarbon, img)

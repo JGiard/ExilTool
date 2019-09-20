@@ -1,5 +1,6 @@
-Flask==1.1.1
-Flask-Session==0.3.1
-injector==0.17.0
-Pyckson==1.7.0
-pymongo==3.9.0
+autovalue
+flask
+flask-session
+injector
+pyckson
+pymongo

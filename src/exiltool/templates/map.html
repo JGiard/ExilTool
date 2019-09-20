@@ -15,22 +15,44 @@
         }
 
         .card {
-            white-space: nowrap;
-            margin: 0.5em;
-            width: 14em;
-            position: relative;
-        }
-        .number {
+            width: 190px;
+            height: 190px;
             position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 0;
-            right: 0;
-            z-index: 20;
+            display: flex;
+            flex-direction: column;
         }
 
-        .list-group-item {
-            padding: 0.5em;
+        .toprow {
+            display: flex;
+        }
+
+        img.place {
+            width: 64px;
+            height: 64px;
+            flex-shrink: 0;
+        }
+
+        .number {
+            position: absolute;
+            top: 0;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .rawinfo {
+            padding: 5px;
+        }
+
+        .map {
+            width: 1000px;
+            height: 1000px;
+            position: relative;
+        }
+
+        .empty {
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
@@ -48,36 +70,48 @@
                    placeholder="Password" value="{{ sector.sector }}" required>
             <button class="btn btn-lg btn-primary mb-2 btn-sm" type="submit">Go</button>
         </form>
-        <div class="content">
-            <div class="row">
-                {% for place in sector.places %}
-                    {% if place.position % 5 == 1 and place.position != 1 %}
+        <div class="map">
+            {% for place in sector.places %}
+                <div class="card border-secondary small text-white bg-dark mb-3"
+                     style="top: {{ (place.position - 1) // 5 * 200 + 5 }}px; left: {{ (place.position - 1) % 5 * 200 + 5 }}px">
+                    <div class="number bg-grey">
+                        {{ place.position }}
+                    </div>
+                    {% if place.category == 'empty' %}
+                        <div class="empty">
+                            Vide
                         </div>
-                        <div class="row">
-                    {% endif %}
-                    {% if not place.planet %}
-                        <div class="col">
-                            <div class="card border-primary small">
-                                Planète inconnue
+                    {% elif place.category == 'vortex' %}
+                        <img class="place"
+                             src="{{ url_for('static', filename='places/pvortex.gif') }}"
+                             alt=""/>
+                    {% elif place.category == 'merchant' %}
+                        <img class="place"
+                             src="{{ url_for('static', filename='places/pmerchant.gif') }}"
+                             alt=""/>
+                    {% elif place.category == 'asteroids' %}
+                        <img class="place"
+                             src="{{ url_for('static', filename='places/pasteroids.gif') }}"
+                             alt=""/>
+                    {% elif place.category == 'planet' or place.planet %}
+                        <div class="toprow">
+                            <img class="place"
+                                 src="{{ url_for('static', filename='places/p' + place.planet.image + '.gif') }}"
+                                 alt=""/>
+                            <div class="rawinfo">
+                                Place: {{ place.planet.land }} / {{ place.planet.space }}<br/>
+                                Stats: {{ place.planet.mineral }} / {{ place.planet.hydrocarbon }}<br/>
+                                Prod: {{ (place.planet.mineral_prod // 1000) | int }}k/h
+                                / {{ (place.planet.hydrocarbon_prod // 1000) | int }}k/h
                             </div>
                         </div>
                     {% else %}
-                        <div class="col">
-                            <div class="card border-primary small">
-                                <div class="number">
-                                    {{  place.position }}
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">Terrain: {{ place.planet.land }}</li>
-                                    <li class="list-group-item">Espace: {{ place.planet.space }}</li>
-                                    <li class="list-group-item">Minerai: {{ place.planet.mineral }} - {{ (place.planet.mineral_prod // 1000) | int }}k/h</li>
-                                    <li class="list-group-item">Hydro: {{ place.planet.hydrocarbon }} - {{ (place.planet.hydrocarbon_prod // 1000) | int }}k/h</li>
-                                </ul>
-                            </div>
+                        <div class="empty">
+                            Vide
                         </div>
                     {% endif %}
-                {% endfor %}
                 </div>
+            {% endfor %}
         </div>
     </div>
 </div>
