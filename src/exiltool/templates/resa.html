@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% include 'head.html' %}
+    <title>ExilTool</title>
+    <style>
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        h1 {
+            margin-top: 1em;
+            align-self: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% include 'menu.html' %}
+    <div class="content">
+        <h1 id="title">Réservations de planètes</h1>
+        <section>
+            <h3>Règles</h3>
+            <p>Pas plus de 3 réservations simultanées par personnes, Typiquement pour un couple minerai/hydro.<br/>
+                Une 3è réservation est accordée pour des planètes secondaires d'importance stratégique genre bunker,
+                radar,
+                ...</p>
+        </section>
+        <form id="resa" class="form-inline">
+            <label for="galaxy" class="sr-only">galaxie</label>
+            <input type="number" min="1" max="10" id="galaxy" class="form-control form-control-sm mb-2 mr-sm-2"
+                   placeholder="Galaxie" value="" required>
+            <label for="sector" class="sr-only">secteur</label>
+            <input type="number" min="1" max="99" id="sector" class="form-control form-control-sm mb-2 mr-sm-2"
+                   placeholder="Secteur" value="" required>
+            <label for="planet" class="sr-only">planète</label>
+            <input type="number" min="1" max="25" id="planet" class="form-control form-control-sm mb-2 mr-sm-2"
+                   placeholder="Position" value="" required>
+            <button class="btn btn-lg btn-primary mb-2 btn-sm" type="submit">Go</button>
+        </form>
+        <div id="error" class="alert alert-danger" role="alert" style="display: none">
+            Something went wrong.
+        </div>
+        <section>
+            <h3>Planètes réservées</h3>
+            <ul>
+                {% for resa in resas %}
+                    <li>
+                        <a href="/map?g={{ resa.galaxy }}&s={{ resa.sector }}">{{ resa.galaxy }}.{{ resa.sector }}.{{ resa.position }}</a>
+                        : {{ resa.username }}
+                        {% if resa.username == username %}
+                            <button type="button" class="close" aria-label="Close"
+                                    onclick="remove({{ resa.galaxy }}, {{ resa.sector }}, {{ resa.position }});">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+</div>
+<script>
+    var username = '{{ username }}';
+    function remove(galaxy, sector, planet) {
+        var route = '/api/resa/g/' + galaxy + '/s/' + sector + '/p/' + planet;
+
+        $.ajax({
+            url: route,
+            method: 'DELETE',
+            contentType: 'applcation/json'
+        }).done(function (data) {
+            window.location.reload();
+        }).fail(function () {
+            errordiv.text('Unexpected Error');
+            errordiv.show();
+        });
+    }
+
+    $('#resa').submit(function (event) {
+        var galaxy = parseInt($('#galaxy').val());
+        var sector = parseInt($('#sector').val());
+        var planet = parseInt($('#planet').val());
+
+        var route = '/api/resa/g/' + galaxy + '/s/' + sector + '/p/' + planet;
+        var errordiv = $('#error');
+        errordiv.hide();
+
+        $.post({
+            url: route,
+            contentType: 'applcation/json',
+            dataType: 'json'
+        }).done(function (data) {
+            if (!data.success) {
+                if (data.code === 1) {
+                    errordiv.text('Vous avez déjà 3 reservations');
+                }
+                if (data.code === 2) {
+                    errordiv.text('Cette planète est déjà réservée');
+                }
+                errordiv.show();
+            } else {
+                window.location.reload();
+            }
+        }).fail(function () {
+            errordiv.text('Unexpected Error');
+            errordiv.show();
+        });
+
+        event.preventDefault();
+        return false;
+    });
+</script>
+</body>
+</html>
