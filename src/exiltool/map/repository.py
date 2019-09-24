@@ -49,5 +49,5 @@ class MapRepository:
 
     def update_places(self, places: List[Place]):
         mongo_places = [MongoPlace.from_place(place) for place in places]
-        requests = [ReplaceOne({'_id': place.id}, serialize(place)) for place in mongo_places]
+        requests = [ReplaceOne({'_id': place.id}, serialize(place), upsert=True) for place in mongo_places]
         self.collection.bulk_write(requests)
