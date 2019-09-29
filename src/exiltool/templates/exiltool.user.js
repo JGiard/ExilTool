@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         {{ name }}
 // @namespace    {{ site }}
-// @version      0.2.2
+// @version      {{ version }}
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.exxxxile.ovh/exile/map*
@@ -20,6 +20,48 @@
     /* globals GM */
     const baseUrl = '{{ site }}';
     const apiKey = '{{ apikey }}';
+
+    function now() {
+        return Math.floor(new Date().getTime() / 1000);
+    }
+
+    const lastCheck = await GM.getValue('last-version-check', 0);
+    if (lastCheck === 0) {
+        GM.setValue('last-version-check', now());
+    } else if (lastCheck < now() - 86400) {
+        GM.xmlHttpRequest({
+            url: baseUrl + 'api/script/version',
+            method: 'GET',
+            headers: {
+                'ApiKey': apiKey
+            },
+            onload: function(data) {
+                if (data.responseText !== GM.info.script.version) {
+                    $('body').append(
+                        $('<div/>').attr('id', 'exiltool').css({
+                            'position': 'absolute',
+                            'top': 0,
+                            'right': 0,
+                            'border': '1px solid #555',
+                            'background': 'black',
+                            'z-index': 200,
+                            'width': '350px',
+                            'display': 'flex',
+                            'flex-direction': 'column',
+                            'align-items': 'stretch'
+                        }).append(
+                            $('<a/>').text('Nouvelle version du script disponible').attr('href', baseUrl + 'exiltool.user.js').css({
+                                'background': 'url(/static/exile/assets/styles/s_transparent/table/enemy.png)',
+                                'padding': '2px 5px'
+                            })
+                        )
+                    );
+                } else {
+                    GM.setValue('last-version-check', now());
+                }
+            }
+        });
+    }
 
     let mapMatch = window.location.href.match(/map\?g=([0-9]+)&s=([0-9]+)/);
     if (mapMatch) {
@@ -79,10 +121,6 @@
         let text = $('#mapsector').siblings('script').text();
         text = text.replace('displaySector', 'processSector');
         eval(text);
-    }
-
-    function now() {
-        return Math.floor(new Date().getTime() / 1000);
     }
 
     const sectorDistance = 21600000;
