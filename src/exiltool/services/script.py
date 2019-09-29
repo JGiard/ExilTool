@@ -7,4 +7,5 @@ from exiltool.model.user import User
 class ScriptService:
     @route('/exiltool.user.js')
     def get_user_script(self, user: User):
-        return render_template('exiltool.user.js', site=request.host_url, apikey=user.apikey)
+        name = 'ExilTool-local' if 'localhost' in request.host_url else 'ExilTool'
+        return render_template('exiltool.user.js', name=name, site=request.host_url, apikey=user.apikey)
