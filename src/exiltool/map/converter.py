@@ -1,6 +1,6 @@
 from typing import Optional
 
-from exiltool.map.model.domain import Sector, Place, Planet, PlaceType
+from exiltool.map.model.domain import Sector, Place, Planet, PlaceType, PlaceOwner
 from exiltool.map.model.js import JsPlace, JsPlanet
 from exiltool.map.model.ui import UiSector, UiPlace, UiPlanet
 from exiltool.map.tools import compute_prod
@@ -16,10 +16,16 @@ class MapConverter:
         return UiPlace(place.position, place.category.name, planet)
 
     def planet_to_ui(self, planet: Planet) -> UiPlanet:
+        owner = ''
+        if planet.owner:
+            if planet.owner.alliance:
+                owner = '[{}] {}'.format(planet.owner.alliance, planet.owner.name)
+            else:
+                owner = planet.owner.name
         return UiPlanet(planet.land, planet.space, planet.mineral, planet.hydrocarbon,
                         compute_prod(planet.land, planet.mineral),
                         compute_prod(planet.land, planet.hydrocarbon),
-                        planet.image)
+                        planet.image, owner)
 
     def place_from_js(self, place: JsPlace) -> Place:
         place_type = PlaceType.planet
@@ -35,6 +41,10 @@ class MapConverter:
         return Place(place.galaxy, place.sector, place.position, place_type, planet)
 
     def planet_from_js(self, planet: Optional[JsPlanet], img: str) -> Planet:
+        owner = None
+        if planet.owner:
+            alliance = planet.alliance if planet.alliance else None
+            owner = PlaceOwner(planet.owner, alliance)
         if planet is None:
             return Planet(-1, -1, -1, -1, img)
-        return Planet(planet.land, planet.space, planet.mineral, planet.hydrocarbon, img)
+        return Planet(planet.land, planet.space, planet.mineral, planet.hydrocarbon, img, owner)

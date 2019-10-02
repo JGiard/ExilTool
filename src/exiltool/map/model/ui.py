@@ -1,11 +1,10 @@
 from typing import Optional, List
 
-from exiltool.map.model.domain import PlaceType
-
 
 class UiPlanet:
     def __init__(self, land: int, space: int, mineral: int, hydrocarbon: int,
-                 mineral_prod: int, hydrocarbon_prod: int, image: str):
+                 mineral_prod: int, hydrocarbon_prod: int, image: str,
+                 owner: str):
         self.land = land
         self.space = space
         self.mineral = mineral
@@ -13,6 +12,7 @@ class UiPlanet:
         self.mineral_prod = mineral_prod
         self.hydrocarbon_prod = hydrocarbon_prod
         self.image = image
+        self.owner = owner
 
 
 class UiPlace:

@@ -31,6 +31,8 @@ class MapService:
                 if place.planet.mineral == -1 and places[place.position].planet is not None:
                     old_place = places[place.position]
                     planet = old_place.planet.update(image=place.planet.image)
+                    if place.planet.owner.name != 'Occupée':
+                        planet = planet.update(owner=place.planet.owner)
                     places[place.position] = old_place.update(planet=planet)
                 else:
                     places[place.position] = place

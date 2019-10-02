@@ -5,11 +5,14 @@ from autovalue import autovalue
 
 @autovalue
 class JsPlanet:
-    def __init__(self, land: int, space: int, mineral: int, hydrocarbon: int):
+    def __init__(self, land: int, space: int, mineral: int, hydrocarbon: int,
+                 alliance: Optional[str] = None, owner: Optional[str] = None):
         self.land = land
         self.space = space
         self.mineral = mineral
         self.hydrocarbon = hydrocarbon
+        self.alliance = alliance
+        self.owner = owner
 
 
 @autovalue

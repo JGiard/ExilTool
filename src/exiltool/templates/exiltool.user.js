@@ -78,7 +78,9 @@
                     'land': floor,
                     'space': space,
                     'mineral': a_ore,
-                    'hydrocarbon': a_hydrocarbon
+                    'hydrocarbon': a_hydrocarbon,
+                    'alliance': alliancetag,
+                    'owner': owner
                 };
             }
 

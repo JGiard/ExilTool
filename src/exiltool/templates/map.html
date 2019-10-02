@@ -54,6 +54,9 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .owner {
+            padding-left: 0.5em;
+        }
     </style>
 </head>
 <body>
@@ -104,6 +107,9 @@
                                 Prod: {{ (place.planet.mineral_prod // 1000) | int }}k/h
                                 / {{ (place.planet.hydrocarbon_prod // 1000) | int }}k/h
                             </div>
+                        </div>
+                        <div class="owner">
+                            {{ place.planet.owner }}
                         </div>
                     {% else %}
                         <div class="empty">

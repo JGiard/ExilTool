@@ -5,13 +5,22 @@ from autovalue import autovalue
 
 
 @autovalue
+class PlaceOwner:
+    def __init__(self, name: str, alliance: Optional[str] = None):
+        self.name = name
+        self.alliance = alliance
+
+
+@autovalue
 class Planet:
-    def __init__(self, land: int, space: int, mineral: int, hydrocarbon: int, image: Optional[str] = '01'):
+    def __init__(self, land: int, space: int, mineral: int, hydrocarbon: int, image: Optional[str] = '01',
+                 owner: Optional[PlaceOwner] = None):
         self.land = land
         self.space = space
         self.mineral = mineral
         self.hydrocarbon = hydrocarbon
         self.image = image
+        self.owner = owner
 
 
 class PlaceType(Enum):
