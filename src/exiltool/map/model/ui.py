@@ -16,7 +16,9 @@ class UiPlanet:
 
 
 class UiPlace:
-    def __init__(self, position: int, category: str, planet: Optional[UiPlanet] = None):
+    def __init__(self, galaxy: int, sector: int, position: int, category: str, planet: Optional[UiPlanet] = None):
+        self.galaxy = galaxy
+        self.sector = sector
         self.position = position
         self.category = category
         self.planet = planet

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 from injector import inject
 from pyckson import parse, rename, serialize
@@ -51,3 +51,33 @@ class MapRepository:
         mongo_places = [MongoPlace.from_place(place) for place in places]
         requests = [ReplaceOne({'_id': place.id}, serialize(place), upsert=True) for place in mongo_places]
         self.collection.bulk_write(requests)
+
+    def top_mineral(self, galaxy: int) -> Iterable[Place]:
+        query = {
+            'place.galaxy': galaxy,
+            'place.planet.mineral': {'$gt': 100},
+            'place.planet.owner': {'$exists': False}
+        }
+        for doc in self.collection.find(query):
+            mongo_place = parse(MongoPlace, doc)
+            yield mongo_place.place
+
+    def top_hydro(self, galaxy: int) -> Iterable[Place]:
+        query = {
+            'place.galaxy': galaxy,
+            'place.planet.hydrocarbon': {'$gt': 100},
+            'place.planet.owner': {'$exists': False}
+        }
+        for doc in self.collection.find(query):
+            mongo_place = parse(MongoPlace, doc)
+            yield mongo_place.place
+
+    def top_land(self, galaxy: int) -> Iterable[Place]:
+        query = {
+            'place.galaxy': galaxy,
+            'place.planet.land': {'$gt': 120},
+            'place.planet.owner': {'$exists': False}
+        }
+        for doc in self.collection.find(query):
+            mongo_place = parse(MongoPlace, doc)
+            yield mongo_place.place

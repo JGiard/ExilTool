@@ -40,3 +40,15 @@ class WebService:
     def resa(self, user: User):
         all_resa = sorted(list(self.resas.get_all()))
         return render_template('resa.html', resas=all_resa, username=user.username)
+
+    @route('/tops')
+    def tops(self, user: User):
+        galaxy = int(request.args.get('g', 1))
+        top_mineral = [self.converter.place_to_ui(place) for place in self.sectors.top_mineral(galaxy)]
+        top_mineral = sorted(top_mineral, key=lambda x: x.planet.mineral_prod, reverse=True)[:50]
+        top_hydro = [self.converter.place_to_ui(place) for place in self.sectors.top_hydro(galaxy)]
+        top_hydro = sorted(top_hydro, key=lambda x: x.planet.hydrocarbon_prod, reverse=True)[:50]
+        top_land = [self.converter.place_to_ui(place) for place in self.sectors.top_land(galaxy)]
+        top_land = sorted(top_land, key=lambda x: x.planet.land, reverse=True)[:50]
+        return render_template('tops.html', galaxy=galaxy, top_mineral=top_mineral, top_hydro=top_hydro,
+                               top_land=top_land)

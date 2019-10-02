@@ -13,7 +13,7 @@ class MapConverter:
 
     def place_to_ui(self, place: Place) -> UiPlace:
         planet = self.planet_to_ui(place.planet) if place.planet else None
-        return UiPlace(place.position, place.category.name, planet)
+        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet)
 
     def planet_to_ui(self, planet: Planet) -> UiPlanet:
         owner = ''
