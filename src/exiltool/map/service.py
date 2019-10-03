@@ -28,14 +28,19 @@ class MapService:
                 places[place.position] = place
                 continue
             if place.category == PlaceType.planet:
-                if place.planet.mineral == -1 and places[place.position].planet is not None:
-                    old_place = places[place.position]
-                    planet = old_place.planet.update(image=place.planet.image)
-                    if place.planet.owner.name != 'Occupée':
-                        planet = planet.update(owner=place.planet.owner)
-                    places[place.position] = old_place.update(planet=planet)
-                else:
+                if places[place.position].planet is None:
                     places[place.position] = place
+                else:
+                    old_place = places[place.position]
+                    new_planet = old_place.planet.update(image=place.planet.image)
+                    if place.planet.mineral != -1:
+                        new_planet = new_planet.update(mineral=place.planet.mineral,
+                                                       hydrocarbon=place.planet.hydrocarbon,
+                                                       land=place.planet.land,
+                                                       space=place.planet.space)
+                    if place.planet.owner.name != 'Occupée':
+                        new_planet = new_planet.update(owner=place.planet.owner)
+                    places[place.position] = old_place.update(planet=new_planet)
             else:
                 places[place.position] = place
 
