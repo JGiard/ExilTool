@@ -1,7 +1,11 @@
+from collections import Counter
+
 from flask import render_template, request
 from injector import inject
 
 from exiltool.backend.decorators import route, noauth
+from exiltool.fleets.model.ui import UiPlayerShips, UiFleets
+from exiltool.fleets.repository import ShipsRepository
 from exiltool.map.converter import MapConverter
 from exiltool.map.repository import MapRepository
 from exiltool.model.user import User
@@ -10,10 +14,12 @@ from exiltool.mongo.resa import ResaRepository
 
 class WebService:
     @inject
-    def __init__(self, sectors: MapRepository, converter: MapConverter, resas: ResaRepository):
+    def __init__(self, sectors: MapRepository, converter: MapConverter, resas: ResaRepository,
+                 ships: ShipsRepository):
         self.sectors = sectors
         self.converter = converter
         self.resas = resas
+        self.ships = ships
 
     @route('/')
     def home(self):
@@ -52,3 +58,20 @@ class WebService:
         top_land = sorted(top_land, key=lambda x: x.planet.land, reverse=True)[:50]
         return render_template('tops.html', galaxy=galaxy, top_mineral=top_mineral, top_hydro=top_hydro,
                                top_land=top_land)
+
+    @route('/fleets')
+    def fleets(self):
+        players = []
+        total_ships = Counter()
+        total_sig = 0
+        for player in self.ships.get_all():
+            ships = {}
+            player_sig = 0
+            for player_ship in player.ships:
+                ships[player_ship.ship.name] = player_ship.quantity
+                total_ships[player_ship.ship.name] += player_ship.quantity
+                player_sig += player_ship.ship.signature * player_ship.quantity
+            total_sig += player_sig
+            players.append(UiPlayerShips(player.username, ships, player_sig))
+        total = UiPlayerShips('Total', total_ships, total_sig)
+        return render_template('fleets.html', fleets=UiFleets([total] + players))

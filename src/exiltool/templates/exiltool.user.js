@@ -18,6 +18,8 @@
     /* globals $ */
     /* globals formattime */
     /* globals GM */
+    /* globals activeCategory */
+    /* globals fleetList */
     const baseUrl = '{{ site }}';
     const apiKey = '{{ apikey }}';
 
@@ -35,7 +37,7 @@
             headers: {
                 'ApiKey': apiKey
             },
-            onload: function(data) {
+            onload: function (data) {
                 if (data.responseText !== GM.info.script.version) {
                     $('body').append(
                         $('<div/>').attr('id', 'exiltool').css({
@@ -125,8 +127,27 @@
         eval(text);
     }
 
+    let fleetsMatch = window.location.href.match(/fleets/);
+    if (fleetsMatch) {
+        setTimeout(function () {
+            if (activeCategory === 0) {
+                // noinspection JSUnresolvedFunction
+                GM.xmlHttpRequest({
+                    url: baseUrl + 'api/fleets',
+                    data: JSON.stringify(fleetList),
+                    contentType: 'application/json',
+                    method: 'POST',
+                    headers: {
+                        'ApiKey': apiKey
+                    }
+                });
+            }
+        }, 1000);
+    }
+
     const sectorDistance = 21600000;
     const planetDistance = 3600000;
+
     class Position {
         constructor(g, s, p) {
             this.g = g;
@@ -192,7 +213,7 @@
         }
 
         static timeToCompare(destination) {
-            return function(a, b) {
+            return function (a, b) {
                 return a.flyTime(destination) - b.flyTime(destination);
             }
         }
@@ -263,7 +284,7 @@
             this.readycheck = readycheck;
             this.getStateId = 0;
             this.channel = new BroadcastChannel('synchro');
-            this.channel.onmessage = (function(e) {
+            this.channel.onmessage = (function (e) {
                 // noinspection JSPotentiallyInvalidUsageOfClassThis
                 this.onMessage(e);
             }).bind(this);
@@ -390,7 +411,7 @@
     function parseTime(time) {
         let match = time.match(/([0-9]+)?j*\s*([0-9]{2}):([0-9]{2}):([0-9]{2})/);
         let days = match[1] ? parseInt(match[1]) : 0;
-        return days*86400 + parseInt(match[2]) * 3600 + parseInt(match[3]) * 60 + parseInt(match[4]);
+        return days * 86400 + parseInt(match[2]) * 3600 + parseInt(match[3]) * 60 + parseInt(match[4]);
     }
 
     let fleetMatch = window.location.href.match(/fleet\?(.*)id=([0-9]+)/);
@@ -474,7 +495,7 @@
                     content
                 );
 
-            openclose.click(function() {
+            openclose.click(function () {
                 opened = !opened;
                 setContent();
                 GM.setValue('synchro-tool-opened', opened);
@@ -499,11 +520,13 @@
                 displaySynchro();
             }
         }
+
         function isReady() {
             return manager.fleet.moving || manager.state.ongoing && Position.compare(inputDestination(), manager.state.destination) === 0;
         }
 
         manager = new StateManager(myFleet, refreshPanel, isReady);
+
         /*manager.channel = new BroadcastChannel('synchro');
         manager.channel.onmessage = function(e) {
             window.alert('onmessage');
@@ -532,7 +555,7 @@
                 })
             );
 
-            manager.state.sortedFleets().forEach(function(fleet) {
+            manager.state.sortedFleets().forEach(function (fleet) {
                 let timeLeft = fleet.moving ? fleet.remainingTime() : fleet.timeTo(manager.state.destination);
                 let deleteLink = $('<a/>').html('&times;').attr('href', '#').css('margin-left', '0.5em');
                 let fleetdiv = $('<div/>').css({
@@ -552,7 +575,7 @@
                     fleetdiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/enemy.png)');
                 }
                 content.append(fleetdiv);
-                deleteLink.click(function() {
+                deleteLink.click(function () {
                     manager.removeFleet(fleet.id);
                     return false;
                 });
@@ -617,7 +640,7 @@
                     let countdown = $('<div/>').text(formattime(targetTime - arrivalTime));
                     containerDiv.append(countdown);
                     content.append(containerDiv);
-                    setInterval(function() {
+                    setInterval(function () {
                         let targetTime = manager.state.targetTime();
                         let arrivalTime = manager.fleet.timeTo(manager.state.destination);
                         countdown.text(formattime(targetTime - arrivalTime));
@@ -625,7 +648,7 @@
                             containerDiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/pna.png)');
                         }
                     }, 1000);
-                    setTimeout(function() {
+                    setTimeout(function () {
                         if (!notified) {
                             new Notification('La flotte `' + manager.fleet.name + '` partira dans 10s', {'icon': '/static/exile/assets/reports/400.jpg'});
                             notified = true;
@@ -639,7 +662,7 @@
             if (!manager.state.ongoing) {
                 return;
             }
-            manager.state.fleets.filter(f => f.moving).forEach(function(fleet) {
+            manager.state.fleets.filter(f => f.moving).forEach(function (fleet) {
                 $('#fleet-' + fleet.id).text(formattime(fleet.remainingTime()));
             });
         }
@@ -649,10 +672,11 @@
         function updateLink() {
             createSynchroLink.text('Créer une synchro vers ' + destG.val() + '.' + destS.val() + '.' + destP.val());
         }
+
         function displayCreateSynchro() {
             updateLink();
             content.append(createSynchroLink);
-            createSynchroLink.click(function() {
+            createSynchroLink.click(function () {
                 manager.initSynchro(inputDestination());
                 return false;
             });
@@ -673,7 +697,7 @@
                     'margin': '2px 5px'
                 })
             );
-            reconnect.click(function() {
+            reconnect.click(function () {
                 manager.reconnect();
                 return false;
             });
@@ -684,6 +708,7 @@
             manager.init();
             setInterval(updateTime, 1000);
         }
+
         init();
     }
 })();

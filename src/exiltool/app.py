@@ -1,6 +1,7 @@
 from flask import Flask
 from injector import inject
 
+from exiltool.fleets.service import FleetsService
 from exiltool.map.service import MapService
 from exiltool.services.auth import AuthenticationService
 from exiltool.services.health import HealthService
@@ -26,4 +27,5 @@ class ExilApp:
         self.services.install(self.flask, AuthenticationService)
         self.services.install(self.flask, HealthService)
         self.services.install(self.flask, ResaService)
+        self.services.install(self.flask, FleetsService)
         return self.flask

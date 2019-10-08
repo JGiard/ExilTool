@@ -52,9 +52,21 @@ class ServiceRunner:
         def wrapper(instance, flask_params: dict, user: Optional[User]):
             fargs = flask_params.copy()
             if 'data' in parameters and request.method == 'POST':
-                fargs['data'] = parse(parameters['data'].annotation, request.get_json(force=True))
+                data = request.get_json(force=True)
+                self.fix_arrays(data)
+                fargs['data'] = parse(parameters['data'].annotation, data)
             if user and 'user' in parameters and parameters['user'].annotation == User:
                 fargs['user'] = user
             return method(instance, **fargs)
 
         return wrapper
+
+    def fix_arrays(self, data):
+        if type(data) is list:
+            if data[0] == 0:
+                del data[0]
+            for item in data:
+                self.fix_arrays(item)
+        if type(data) is dict:
+            for item in data.values():
+                self.fix_arrays(item)
