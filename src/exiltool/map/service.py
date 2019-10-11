@@ -38,7 +38,7 @@ class MapService:
                                                        hydrocarbon=place.planet.hydrocarbon,
                                                        land=place.planet.land,
                                                        space=place.planet.space)
-                    if place.planet.owner.name != 'Occupée':
+                    if place.planet and place.planet.owner and place.planet.owner.name != 'Occupée':
                         new_planet = new_planet.update(owner=place.planet.owner)
                     places[place.position] = old_place.update(planet=new_planet)
             else:

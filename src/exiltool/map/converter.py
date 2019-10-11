@@ -41,10 +41,10 @@ class MapConverter:
         return Place(place.galaxy, place.sector, place.position, place_type, planet)
 
     def planet_from_js(self, planet: Optional[JsPlanet], img: str) -> Planet:
+        if planet is None:
+            return Planet(-1, -1, -1, -1, img)
         owner = None
         if planet.owner:
             alliance = planet.alliance if planet.alliance else None
             owner = PlaceOwner(planet.owner, alliance)
-        if planet is None:
-            return Planet(-1, -1, -1, -1, img)
         return Planet(planet.land, planet.space, planet.mineral, planet.hydrocarbon, img, owner)
