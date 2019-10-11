@@ -23,6 +23,10 @@ class UiPlace:
         self.category = category
         self.planet = planet
 
+    @property
+    def name(self) -> str:
+        return '{}.{}.{}'.format(self.galaxy, self.sector, self.position)
+
 
 class UiSector:
     def __init__(self, galaxy: int, sector: int, places: List[UiPlace]):

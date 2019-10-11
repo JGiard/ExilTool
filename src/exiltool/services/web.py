@@ -56,8 +56,10 @@ class WebService:
         top_hydro = sorted(top_hydro, key=lambda x: x.planet.hydrocarbon_prod, reverse=True)[:50]
         top_land = [self.converter.place_to_ui(place) for place in self.sectors.top_land(galaxy)]
         top_land = sorted(top_land, key=lambda x: x.planet.land, reverse=True)[:50]
+        resas = self.resas.get_all()
+        resas = {'{}.{}.{}'.format(r.galaxy, r.sector, r.position): r.username for r in resas}
         return render_template('tops.html', galaxy=galaxy, top_mineral=top_mineral, top_hydro=top_hydro,
-                               top_land=top_land)
+                               top_land=top_land, resas=resas)
 
     @route('/fleets')
     def fleets(self):
