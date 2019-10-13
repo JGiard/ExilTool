@@ -63,7 +63,7 @@ class ServiceRunner:
 
     def fix_arrays(self, data):
         if type(data) is list:
-            if data[0] == 0:
+            if data and data[0] == 0:
                 del data[0]
             for item in data:
                 self.fix_arrays(item)

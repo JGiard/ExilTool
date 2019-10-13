@@ -3,7 +3,7 @@ from flask import render_template, request
 from exiltool.backend.decorators import route, noauth
 from exiltool.model.user import User
 
-SCRIPT_VERSION = '0.3.0'
+SCRIPT_VERSION = '0.4.0'
 
 
 class ScriptService:

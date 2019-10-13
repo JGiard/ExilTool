@@ -7,7 +7,7 @@ class Ship(Enum):
     inter = ('Intercepteur', 5)
     corv_legere = ('Corvette légère', 7)
     corv_lourde = ('Corvette lourde', 9)
-    fa = ('Frégate d&#39;assaut', 28)
+    fa = ('Frégate d\'assaut', 28)
     croiseur = ('Croiseur', 68)
     cc = ('Croiseur de combat', 120)
 
@@ -16,13 +16,20 @@ class Ship(Enum):
         self.signature = signature
 
 
-class PlayerShipCount:
+class SourceType(Enum):
+    fleet = 1
+    planet = 2
+
+
+class FleetShips:
     def __init__(self, ship: Ship, quantity: int):
         self.ship = ship
         self.quantity = quantity
 
 
-class PlayerShips:
-    def __init__(self, username: str, ships: List[PlayerShipCount]):
+class Fleet:
+    def __init__(self, username: str, source_id: int, source_type: SourceType, ships: List[FleetShips]):
         self.username = username
+        self.source_id = source_id
+        self.source_type = source_type
         self.ships = ships

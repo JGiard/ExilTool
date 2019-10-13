@@ -1,11 +1,11 @@
-from collections import Counter
+from collections import Counter, defaultdict
 
 from flask import render_template, request
 from injector import inject
 
 from exiltool.backend.decorators import route, noauth
 from exiltool.fleets.model.ui import UiPlayerShips, UiFleets
-from exiltool.fleets.repository import ShipsRepository
+from exiltool.fleets.repository import FleetsRepository
 from exiltool.map.converter import MapConverter
 from exiltool.map.repository import MapRepository
 from exiltool.model.user import User
@@ -15,11 +15,11 @@ from exiltool.mongo.resa import ResaRepository
 class WebService:
     @inject
     def __init__(self, sectors: MapRepository, converter: MapConverter, resas: ResaRepository,
-                 ships: ShipsRepository):
+                 fleets: FleetsRepository):
         self.sectors = sectors
         self.converter = converter
         self.resas = resas
-        self.ships = ships
+        self.fleets = fleets
 
     @route('/')
     def home(self):
@@ -63,17 +63,14 @@ class WebService:
 
     @route('/fleets')
     def fleets(self):
-        players = []
-        total_ships = Counter()
-        total_sig = 0
-        for player in self.ships.get_all():
-            ships = {}
-            player_sig = 0
-            for player_ship in player.ships:
-                ships[player_ship.ship.name] = player_ship.quantity
-                total_ships[player_ship.ship.name] += player_ship.quantity
-                player_sig += player_ship.ship.signature * player_ship.quantity
-            total_sig += player_sig
-            players.append(UiPlayerShips(player.username, ships, player_sig))
-        total = UiPlayerShips('Total', total_ships, total_sig)
-        return render_template('fleets.html', fleets=UiFleets([total] + players))
+        ships_by_player = defaultdict(Counter)
+        sig_by_player = Counter()
+        for fleet in self.fleets.get_all():
+            for ship in fleet.ships:
+                ships_by_player[fleet.username][ship.ship.name] += ship.quantity
+                ships_by_player['Total'][ship.ship.name] += ship.quantity
+                sig_by_player[fleet.username] += ship.ship.signature * ship.quantity
+                sig_by_player['Total'] += ship.ship.signature * ship.quantity
+
+        data = [UiPlayerShips(player, ships, sig_by_player[player]) for player, ships in ships_by_player.items()]
+        return render_template('fleets.html', fleets=UiFleets(data))

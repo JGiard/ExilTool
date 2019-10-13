@@ -6,6 +6,7 @@
 // @author       You
 // @match        https://www.exxxxile.ovh/exile/map*
 // @match        https://www.exxxxile.ovh/exile/fleet*
+// @match        https://www.exxxxile.ovh/exile/orbit*
 // @grant        GM.xmlHttpRequest
 // @grant        GM.setValue
 // @grant        GM.getValue
@@ -143,6 +144,61 @@
                 });
             }
         }, 1000);
+    }
+
+    let orbitMatch = window.location.href.match(/orbit\?planet=([0-9]+)/);
+    if (orbitMatch) {
+        let planetId = parseInt(orbitMatch[1]);
+        let ships = [];
+        $('#orbit table').eq(1).find('tr.smallitem table tr').each(function () {
+            let name = $(this).find('a b').text();
+            let quantity = parseInt($(this).find('td:contains("x")').text().substr(1));
+            ships.push({
+                'id': name,
+                'quantity': quantity
+            });
+        });
+        // noinspection JSUnresolvedFunction
+        GM.xmlHttpRequest({
+            url: baseUrl + 'api/orbit/' + planetId,
+            data: JSON.stringify(ships),
+            contentType: 'application/json',
+            method: 'POST',
+            headers: {
+                'ApiKey': apiKey
+            }
+        });
+    }
+
+    let orbitsMatch = window.location.href.match(/orbits/);
+    if (orbitsMatch) {
+        let orbits = [];
+        $('#page form div').each(function () {
+            let planetId = parseInt($(this).attr('id').substr(5));
+            let ships = [];
+            $(this).find('table').eq(1).find('tr.smallitem table tr').each(function () {
+                let name = $(this).find('a b').text();
+                let quantity = parseInt($(this).find('td:contains("x")').text().substr(1));
+                ships.push({
+                    'id': name,
+                    'quantity': quantity
+                });
+            });
+            orbits.push({
+                'planetId': planetId,
+                'ships': ships
+            });
+        });
+        // noinspection JSUnresolvedFunction
+        GM.xmlHttpRequest({
+            url: baseUrl + 'api/orbits',
+            data: JSON.stringify(orbits),
+            contentType: 'application/json',
+            method: 'POST',
+            headers: {
+                'ApiKey': apiKey
+            }
+        });
     }
 
     const sectorDistance = 21600000;

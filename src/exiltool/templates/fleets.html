@@ -74,7 +74,8 @@
         $('#fleets').DataTable({
             'paging': false,
             'searching': false,
-            'info': false
+            'info': false,
+            'order': [[ 1, 'desc' ]]
         });
         $('.dataTables_length').addClass('bs-select');
     });

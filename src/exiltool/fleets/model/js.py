@@ -1,6 +1,7 @@
 from typing import List
 
 from autovalue import autovalue
+from pyckson import rename
 
 
 @autovalue
@@ -15,10 +16,18 @@ class JsPlanet:
 
 
 @autovalue
+@rename(name='id')
 class JsShip:
-    def __init__(self, id: str, quantity: int):
-        self.id = id
+    def __init__(self, name: str, quantity: int):
+        self.name = name
         self.quantity = quantity
+
+
+@autovalue
+class JsOrbit:
+    def __init__(self, planet_id: int, ships: List[JsShip]):
+        self.planet_id = planet_id
+        self.ships = ships
 
 
 @autovalue
@@ -29,11 +38,12 @@ class JsResource:
 
 
 @autovalue
+@rename(fleet_id='id')
 class JsFleet:
-    def __init__(self, id: int, name: str, category: int, stance: int, size: int, signature: int, cargoload: int,
+    def __init__(self, fleet_id: int, name: str, category: int, stance: int, size: int, signature: int, cargoload: int,
                  cargocapacity: int, action: str, endtime: int, commandername: str, position: JsPlanet,
                  destination: JsPlanet, ships: List[JsShip], resources: List[JsResource], shared: bool):
-        self.id = id
+        self.fleet_id = fleet_id
         self.name = name
         self.category = category
         self.stance = stance
