@@ -9,6 +9,7 @@ class Ship(Enum):
     corv_legere = ('Corvette légère', 7)
     corv_lourde = ('Corvette lourde', 9)
     fa = ('Frégate d\'assaut', 28)
+    fi = ('Frégate à canon ionique', 32)
     fm = ('Frégate à missiles', 50)
     croiseur = ('Croiseur', 68)
     cc = ('Croiseur de combat', 120)
