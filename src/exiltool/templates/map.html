@@ -59,6 +59,10 @@
         .owner {
             padding-left: 0.5em;
         }
+        .specials {
+            padding-left: 0.5em;
+            color: #ffb200;
+        }
     </style>
 </head>
 <body>
@@ -112,6 +116,11 @@
                         </div>
                         <div class="owner">
                             {{ place.planet.owner }}
+                        </div>
+                        <div class="specials">
+                        {% for special in place.specials %}
+                            {{ special }}
+                        {% endfor %}
                         </div>
                     {% else %}
                         <div class="empty">

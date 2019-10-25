@@ -18,12 +18,13 @@ class JsPlanet:
 @autovalue
 class JsPlace:
     def __init__(self, galaxy: int, sector: int, position: int, img: Optional[str] = '01',
-                 planet: Optional[JsPlanet] = None):
+                 planet: Optional[JsPlanet] = None, elements: Optional[List[str]] = None):
         self.galaxy = galaxy
         self.sector = sector
         self.position = position
         self.img = img
         self.planet = planet
+        self.elements = elements
 
 
 @autovalue

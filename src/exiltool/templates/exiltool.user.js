@@ -92,7 +92,8 @@
                 'sector': sector,
                 'position': position,
                 'planet': planet,
-                'img': img
+                'img': img,
+                'elements': elements
             };
 
             newPlaces.push(place);

@@ -36,12 +36,13 @@ class PlaceType(Enum):
 class Place:
     def __init__(self, galaxy: int, sector: int, position: int,
                  category: Optional[PlaceType] = PlaceType.unknown,
-                 planet: Optional[Planet] = None):
+                 planet: Optional[Planet] = None, specials: Optional[List[str]] = None):
         self.galaxy = galaxy
         self.sector = sector
         self.position = position
         self.category = category
         self.planet = planet
+        self.specials = specials
 
 
 @autovalue

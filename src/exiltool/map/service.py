@@ -31,16 +31,17 @@ class MapService:
                 if places[place.position].planet is None:
                     places[place.position] = place
                 else:
-                    old_place = places[place.position]
-                    new_planet = old_place.planet.update(image=place.planet.image)
+                    new_planet = places[place.position].planet.update(image=place.planet.image)
                     if place.planet.mineral != -1:
                         new_planet = new_planet.update(mineral=place.planet.mineral,
                                                        hydrocarbon=place.planet.hydrocarbon,
                                                        land=place.planet.land,
                                                        space=place.planet.space)
+                        if place.specials is not None:
+                            places[place.position] = places[place.position].update(specials=place.specials)
                     if place.planet.mineral != -1 or (place.planet and place.planet.owner and place.planet.owner.name != 'Occupée'):
                         new_planet = new_planet.update(owner=place.planet.owner)
-                    places[place.position] = old_place.update(planet=new_planet)
+                    places[place.position] = places[place.position].update(planet=new_planet)
             else:
                 places[place.position] = place
 

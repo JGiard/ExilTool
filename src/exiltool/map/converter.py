@@ -5,6 +5,8 @@ from exiltool.map.model.js import JsPlace, JsPlanet
 from exiltool.map.model.ui import UiSector, UiPlace, UiPlanet
 from exiltool.map.tools import compute_prod
 
+ignored_specials = ['Filon de minerai', 'Gisements d\'hydrocarbure']
+
 
 class MapConverter:
     def sector_to_ui(self, sector: Sector) -> UiSector:
@@ -13,7 +15,7 @@ class MapConverter:
 
     def place_to_ui(self, place: Place) -> UiPlace:
         planet = self.planet_to_ui(place.planet) if place.planet else None
-        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet)
+        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet, place.specials)
 
     def planet_to_ui(self, planet: Planet) -> UiPlanet:
         owner = ''
@@ -38,7 +40,8 @@ class MapConverter:
         elif place.img == '' and not place.planet:
             place_type = PlaceType.empty
         planet = self.planet_from_js(place.planet, place.img) if place_type == PlaceType.planet else None
-        return Place(place.galaxy, place.sector, place.position, place_type, planet)
+        specials = [el for el in place.elements if el not in ignored_specials] if place.elements else None
+        return Place(place.galaxy, place.sector, place.position, place_type, planet, specials)
 
     def planet_from_js(self, planet: Optional[JsPlanet], img: str) -> Planet:
         if planet is None:
