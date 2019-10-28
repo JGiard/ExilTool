@@ -45,6 +45,7 @@ class MapService:
                         new_planet = new_planet.update(owner=place.planet.owner)
                     places[place.position] = places[place.position].update(planet=new_planet)
             else:
-                places[place.position] = place
+                if place.orbit and len(place.orbit) > 0:
+                    places[place.position] = places[place.position].update(orbit=place.orbit)
 
         self.repository.update_places(list(places.values()))

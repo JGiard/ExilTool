@@ -93,19 +93,39 @@
                     {% if place.category == 'empty' %}
                         <div class="empty">
                             Vide
+                            <div class="foss">
+                                {% if place.foss %}
+                                    Foss: {{ place.foss }}
+                                {% endif %}
+                            </div>
                         </div>
                     {% elif place.category == 'vortex' %}
                         <img class="place"
                              src="{{ url_for('static', filename='places/pvortex.gif') }}"
                              alt=""/>
+                        <div class="foss">
+                            {% if place.foss %}
+                                Foss: {{ place.foss }}
+                            {% endif %}
+                        </div>
                     {% elif place.category == 'merchant' %}
                         <img class="place"
                              src="{{ url_for('static', filename='places/pmerchant.gif') }}"
                              alt=""/>
+                        <div class="foss">
+                            {% if place.foss %}
+                                Foss: {{ place.foss }}
+                            {% endif %}
+                        </div>
                     {% elif place.category == 'asteroids' %}
                         <img class="place"
                              src="{{ url_for('static', filename='places/pasteroids.gif') }}"
                              alt=""/>
+                        <div class="foss">
+                            {% if place.foss %}
+                                Foss: {{ place.foss }}
+                            {% endif %}
+                        </div>
                     {% elif place.category == 'planet' or place.planet %}
                         <div class="toprow">
                             <img class="place"
