@@ -17,13 +17,14 @@ class UiPlanet:
 
 class UiPlace:
     def __init__(self, galaxy: int, sector: int, position: int, category: str, planet: Optional[UiPlanet] = None,
-                 specials: List[str] = None):
+                 specials: List[str] = None, foss: Optional[int] = None):
         self.galaxy = galaxy
         self.sector = sector
         self.position = position
         self.category = category
         self.planet = planet
         self.specials = specials or []
+        self.foss = foss
 
     @property
     def name(self) -> str:

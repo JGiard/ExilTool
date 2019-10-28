@@ -87,13 +87,26 @@
                 };
             }
 
+            let fleets = [];
+            for (let i = 1; i < orbit.length; i++) {
+                fleets.push({
+                    'id': orbit[i][0],
+                    'name': orbit[i][1],
+                    'tag': orbit[i][2],
+                    'player': orbit[i][3],
+                    'stance': orbit[i][4],
+                    'signature': orbit[i][5]
+                });
+            }
+
             let place = {
                 'galaxy': galaxy,
                 'sector': sector,
                 'position': position,
                 'planet': planet,
                 'img': img,
-                'elements': elements
+                'elements': elements,
+                'orbit': fleets
             };
 
             newPlaces.push(place);

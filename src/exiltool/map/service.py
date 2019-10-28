@@ -39,6 +39,8 @@ class MapService:
                                                        space=place.planet.space)
                         if place.specials is not None:
                             places[place.position] = places[place.position].update(specials=place.specials)
+                        if place.orbit is not None:
+                            places[place.position] = places[place.position].update(orbit=place.orbit)
                     if place.planet.mineral != -1 or (place.planet and place.planet.owner and place.planet.owner.name != 'Occupée'):
                         new_planet = new_planet.update(owner=place.planet.owner)
                     places[place.position] = places[place.position].update(planet=new_planet)

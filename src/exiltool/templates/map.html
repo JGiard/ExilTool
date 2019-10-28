@@ -63,6 +63,10 @@
             padding-left: 0.5em;
             color: #ffb200;
         }
+        .foss {
+            padding-left: 0.5em;
+            color: #ff0a00;
+        }
     </style>
 </head>
 <body>
@@ -121,6 +125,11 @@
                         {% for special in place.specials %}
                             {{ special }}
                         {% endfor %}
+                        </div>
+                        <div class="foss">
+                            {% if place.foss %}
+                                Foss: {{ place.foss }}
+                            {% endif %}
                         </div>
                     {% else %}
                         <div class="empty">

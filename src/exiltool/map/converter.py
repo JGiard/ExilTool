@@ -1,7 +1,7 @@
 from typing import Optional
 
-from exiltool.map.model.domain import Sector, Place, Planet, PlaceType, PlaceOwner
-from exiltool.map.model.js import JsPlace, JsPlanet
+from exiltool.map.model.domain import Sector, Place, Planet, PlaceType, PlaceOwner, OrbitFleet
+from exiltool.map.model.js import JsPlace, JsPlanet, JsOrbitFleet
 from exiltool.map.model.ui import UiSector, UiPlace, UiPlanet
 from exiltool.map.tools import compute_prod
 
@@ -15,7 +15,12 @@ class MapConverter:
 
     def place_to_ui(self, place: Place) -> UiPlace:
         planet = self.planet_to_ui(place.planet) if place.planet else None
-        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet, place.specials)
+        foss = None
+        if place.orbit:
+            for fleet in place.orbit:
+                if fleet.name == 'Les fossoyeurs':
+                    foss = fleet.signature
+        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet, place.specials, foss)
 
     def planet_to_ui(self, planet: Planet) -> UiPlanet:
         owner = ''
@@ -41,7 +46,18 @@ class MapConverter:
             place_type = PlaceType.empty
         planet = self.planet_from_js(place.planet, place.img) if place_type == PlaceType.planet else None
         specials = [el for el in place.elements if el not in ignored_specials] if place.elements else None
-        return Place(place.galaxy, place.sector, place.position, place_type, planet, specials)
+        orbits = [self.orbit_from_js(o) for o in place.orbit] if place.orbit else None
+        return Place(place.galaxy, place.sector, place.position, place_type, planet, specials, orbits)
+
+    def orbit_from_js(self, orbit: JsOrbitFleet) -> OrbitFleet:
+        return OrbitFleet(
+            fleet_id=orbit.fleet_id,
+            name=orbit.name,
+            tag=orbit.tag,
+            player=orbit.player,
+            stance=orbit.stance,
+            signature=orbit.signature
+        )
 
     def planet_from_js(self, planet: Optional[JsPlanet], img: str) -> Planet:
         if planet is None:
