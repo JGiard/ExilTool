@@ -5,7 +5,7 @@ from pyckson import parse, rename, serialize
 from pymongo import ReplaceOne
 from pymongo.database import Database
 
-from exiltool.map.model.domain import Place, Sector
+from exiltool.map.model.domain import Place, Sector, PlaceType
 
 
 @rename(id='_id')
@@ -76,6 +76,17 @@ class MapRepository:
         query = {
             'place.galaxy': galaxy,
             'place.planet.land': {'$gt': 120},
+            'place.planet.owner': {'$exists': False}
+        }
+        for doc in self.collection.find(query):
+            mongo_place = parse(MongoPlace, doc)
+            yield mongo_place.place
+
+    def top_spe(self, galaxy: int) -> Iterable[Place]:
+        query = {
+            'place.galaxy': galaxy,
+            'place.specials.0': {'$exists': True},
+            'place.category': PlaceType.planet.name,
             'place.planet.owner': {'$exists': False}
         }
         for doc in self.collection.find(query):

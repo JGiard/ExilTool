@@ -77,6 +77,20 @@
                     {% endfor %}
                 </ul>
             </div>
+            <div>
+                <h2>Top Spéciales</h2>
+                <ul>
+                    {% for place in top_spe %}
+                        <li>
+                            <a href="/map?g={{ place.galaxy }}&s={{ place.sector }}">{{ place.galaxy }}.{{ place.sector }}.{{ place.position }}</a>
+                            : {{ ', '.join(place.specials) }} ({{ place.planet.land }})
+                            {% if place.name in resas %}
+                                [{{ resas[place.name] }}]
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
 </div>
