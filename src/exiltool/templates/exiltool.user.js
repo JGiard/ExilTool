@@ -775,9 +775,9 @@
             });
         }
 
-        destG.on('input', updateLink).on('input', manager.updateReady);
-        destS.on('input', updateLink).on('input', manager.updateReady);
-        destP.on('input', updateLink).on('input', manager.updateReady);
+        destG.on('input', updateLink).on('input', function() {manager.updateReady()});
+        destS.on('input', updateLink).on('input', function() {manager.updateReady()});
+        destP.on('input', updateLink).on('input', function() {manager.updateReady()});
         $('select[name="planetlist"]').on('change', updateLink).on('change', manager.updateReady);
 
         function displayReconnect() {
