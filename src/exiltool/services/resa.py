@@ -20,7 +20,7 @@ class ResaService:
 
     @route('/api/resa/g/<int:galaxy>/s/<int:sector>/p/<int:position>', method='POST')
     def claim(self, user: User, galaxy: int, sector: int, position: int):
-        if len(list(self.repository.get_by_user(user.username))) >= 3:
+        if len(list(self.repository.get_by_user(user.username))) >= 4:
             return ResaResult(False, ResaErrorCode.limit_reached.value)
         if self.repository.get_by_pos(galaxy, sector, position) is not None:
             return ResaResult(False, ResaErrorCode.already_taken.value)
