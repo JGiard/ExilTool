@@ -24,29 +24,33 @@ class MapService:
         new_places = [self.converter.place_from_js(place) for place in data.places]
         places = {place.position: place for place in self.repository.get_sector(galaxy, sector).places}
         for place in new_places:
+            print(place.position)
             if place.position not in places:
                 places[place.position] = place
                 continue
+            new_place = places[place.position]
             if place.category == PlaceType.planet:
                 if places[place.position].planet is None:
-                    places[place.position] = place
+                    new_place = place
                 else:
-                    new_planet = places[place.position].planet.update(image=place.planet.image)
+                    new_planet = new_place.planet.update(image=place.planet.image)
                     if place.planet.mineral != -1:
                         new_planet = new_planet.update(mineral=place.planet.mineral,
                                                        hydrocarbon=place.planet.hydrocarbon,
                                                        land=place.planet.land,
                                                        space=place.planet.space)
                         if place.specials is not None:
-                            places[place.position] = places[place.position].update(specials=place.specials)
+                            new_place = new_place.update(specials=place.specials)
                         if place.orbit is not None:
-                            places[place.position] = places[place.position].update(orbit=place.orbit)
+                            new_place = new_place.update(orbit=place.orbit)
                     if place.planet.mineral != -1 or (place.planet and place.planet.owner and place.planet.owner.name != 'Occupée'):
                         new_planet = new_planet.update(owner=place.planet.owner)
-                    places[place.position] = places[place.position].update(planet=new_planet)
+                    new_place = new_place.update(planet=new_planet)
             else:
-                places[place.position] = places[place.position].update(category=place.category)
+                new_place = new_place.update(category=place.category)
                 if place.orbit and len(place.orbit) > 0:
-                    places[place.position] = places[place.position].update(orbit=place.orbit)
+                    new_place = new_place.update(orbit=place.orbit)
+            new_place = new_place.update(category=place.category)
+            places[place.position] = new_place
 
         self.repository.update_places(list(places.values()))

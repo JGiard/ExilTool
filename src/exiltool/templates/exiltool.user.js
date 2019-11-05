@@ -69,7 +69,9 @@
     let mapMatch = window.location.href.match(/map\?g=([0-9]+)&s=([0-9]+)/);
     if (mapMatch) {
         let galaxy = parseInt(mapMatch[1]);
+        let checkG = parseInt($('#locgalaxy').val());
         let sector = parseInt(mapMatch[2]);
+        let checkS = parseInt($('#locsector').val());
 
         let newPlaces = [];
 
@@ -139,6 +141,27 @@
 
         let text = $('#mapsector').siblings('script').text();
         text = text.replace('displaySector', 'processSector');
+
+        let div = $('<div/>').attr('id', 'exiltool').css({
+            'position': 'absolute',
+            'top': 0,
+            'right': 0,
+            'border': '1px solid #555',
+            'background': 'black',
+            'z-index': 200,
+            'width': '350px',
+            'display': 'flex',
+            'flex-direction': 'column',
+            'align-items': 'stretch',
+            'height': '90px',
+            'overflow': 'auto'
+        });
+
+        if (galaxy !== checkG || sector !== checkS) {
+            $('body').append(div);
+            div.append($('<span/>').text('update error, incorrect cooordinates'));
+        }
+
         eval(text);
     }
 
