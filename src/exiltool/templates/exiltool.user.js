@@ -556,7 +556,13 @@
             myFleet.position = new Position(parseInt(posMatch[1]), parseInt(posMatch[2]), parseInt(posMatch[3]));
             posMatch = action.find('a:contains("(")').eq(1).text().match(/([0-9]+).([0-9]+).([0-9]+)/);
             myFleet.destination = new Position(parseInt(posMatch[1]), parseInt(posMatch[2]), parseInt(posMatch[3]));
-            myFleet.arrivalTime = now() + parseTime(action.find('#cntdwn1').text())
+            for (let i = 0; i < 10; i++) {
+                let text = action.find('#cntdwn' + i).text();
+                if (text) {
+                    myFleet.arrivalTime = now() + parseTime(text);
+                    break;
+                }
+            }
         }
 
         function initPanel() {
