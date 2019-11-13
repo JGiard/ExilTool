@@ -7,6 +7,7 @@ from exiltool.backend.decorators import route, noauth
 from exiltool.fleets.model.ui import UiPlayerShips, UiFleets
 from exiltool.fleets.repository import FleetsRepository
 from exiltool.map.converter import MapConverter
+from exiltool.map.model.domain import Place
 from exiltool.map.repository import MapRepository
 from exiltool.model.user import User
 from exiltool.mongo.resa import ResaRepository
@@ -47,6 +48,9 @@ class WebService:
         all_resa = sorted(list(self.resas.get_all()))
         return render_template('resa.html', resas=all_resa, username=user.username)
 
+    def is_spe(self, place: Place):
+        return 'Planète extraordinaire' in place.specials or 'Présence de vers de sable' in place.specials
+
     @route('/tops')
     def tops(self, user: User):
         galaxy = int(request.args.get('g', 1))
@@ -57,8 +61,8 @@ class WebService:
         top_land = [self.converter.place_to_ui(place) for place in self.sectors.top_land(galaxy)]
         top_land = sorted(top_land, key=lambda x: x.planet.land, reverse=True)[:50]
         top_spe = [self.converter.place_to_ui(place) for place in self.sectors.top_spe(galaxy)]
-        top_spe = sorted(top_spe, key=lambda x: x.planet.land, reverse=True)[:50]
-        print(top_spe)
+        top_spe = sorted(top_spe, key=lambda x: x.planet.land, reverse=True)
+        top_spe = list(filter(lambda p: self.is_spe(p), top_spe))[:100]
         resas = self.resas.get_all()
         resas = {'{}.{}.{}'.format(r.galaxy, r.sector, r.position): r.username for r in resas}
         return render_template('tops.html', galaxy=galaxy, top_mineral=top_mineral, top_hydro=top_hydro,
