@@ -45,7 +45,7 @@ class MapConverter:
         elif place.img == '' and not place.planet:
             place_type = PlaceType.empty
         planet = self.planet_from_js(place.planet, place.img) if place_type == PlaceType.planet else None
-        specials = [el for el in place.elements if el not in ignored_specials] if place.elements else None
+        specials = [el for el in place.elements if el not in ignored_specials] if place.elements is not None else None
         orbits = [self.orbit_from_js(o) for o in place.orbit] if place.orbit else None
         return Place(place.galaxy, place.sector, place.position, place_type, planet, specials, orbits)
 

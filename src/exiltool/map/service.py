@@ -24,7 +24,6 @@ class MapService:
         new_places = [self.converter.place_from_js(place) for place in data.places]
         places = {place.position: place for place in self.repository.get_sector(galaxy, sector).places}
         for place in new_places:
-            print(place.position)
             if place.position not in places:
                 places[place.position] = place
                 continue
