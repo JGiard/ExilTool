@@ -352,6 +352,9 @@
         }
 
         targetTime() {
+            if (this.ongoing) {
+                return this.sortedFleets().filter(x => x.moving).reverse()[0].flyTime(this.destination)
+            }
             return this.sortedFleets()[0].flyTime(this.destination);
         }
 
@@ -515,6 +518,7 @@
         let destS = $('input[name="s"]');
         let destP = $('input[name="p"]');
         let notified = false;
+        let pageTitle = document.title;
 
         function inputDestination() {
             return new Position(
@@ -665,7 +669,7 @@
                     $('<div/>').text(fleet.name),
                     deleteLink
                 ).append(
-                    $('<div/>').attr('id', 'fleet-' + fleet.id).text(formattime(timeLeft)).css({
+                    $('<div/>').attr('id', 'fleet-' + fleet.id).text(timeDisplay(timeLeft)).css({
                         'text-align': 'right',
                         'flex-grow': 2
                     })
@@ -729,40 +733,67 @@
                 } else {
                     let targetTime = manager.state.targetTime();
                     let arrivalTime = manager.fleet.timeTo(manager.state.destination);
+                    let textDiv = $('<div/>').text('Départ dans');
                     let containerDiv = $('<div/>').css({
                         'display': 'flex',
                         'justify-content': 'space-between',
                         'padding': '2px 5px'
-                    }).append(
-                        $('<div/>').text('Départ dans')
-                    );
+                    }).append(textDiv);
                     let countdown = $('<div/>').text(formattime(targetTime - arrivalTime));
                     containerDiv.append(countdown);
                     content.append(containerDiv);
                     setInterval(function () {
                         let targetTime = manager.state.targetTime();
                         let arrivalTime = manager.fleet.timeTo(manager.state.destination);
-                        countdown.text(formattime(targetTime - arrivalTime));
-                        if (targetTime - arrivalTime < 60) {
-                            containerDiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/pna.png)');
+                        let timeLeft = targetTime - arrivalTime;
+                        if (timeLeft < 0) {
+                            timeLeft = -timeLeft;
+                            textDiv.text('Retard de');
+                            if (timeLeft > 10) {
+                                containerDiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/enemy.png)');
+                            }
+                        } else {
+                            if (timeLeft < 60) {
+                                containerDiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/pna.png)');
+                            }
                         }
+                        countdown.text(formattime(timeLeft));
                     }, 1000);
                     setTimeout(function () {
                         if (!notified) {
                             new Notification('La flotte `' + manager.fleet.name + '` partira dans 10s', {'icon': '/static/exile/assets/reports/400.jpg'});
                             notified = true;
+                            document.title = '❗️' + pageTitle;
                         }
                     }, (targetTime - arrivalTime - 10) * 1000);
+                    setTimeout(function () {
+                        document.title = '🚀' + pageTitle;
+                    }, (targetTime - arrivalTime - 60) * 1000);
                 }
             }
         }
 
+        function timeDisplay(remainingTime) {
+            let arrivalDate = new Date((now() + remainingTime) * 1000);
+            let arrivalStr = ('0' + arrivalDate.getHours()).slice(-2) + 'h' + ('0' + arrivalDate.getMinutes()).slice(-2) + ' ' + ('0' + arrivalDate.getSeconds()).slice(-2) + 's';
+            return formattime(remainingTime) + ' (à ' + arrivalStr + ')';
+        }
+
         function updateTime() {
-            if (!manager.state.ongoing) {
-                return;
-            }
-            manager.state.fleets.filter(f => f.moving).forEach(function (fleet) {
-                $('#fleet-' + fleet.id).text(formattime(fleet.remainingTime()));
+            manager.state.fleets.forEach(function (fleet) {
+                let remaining = fleet.moving ? fleet.remainingTime() : fleet.timeTo(manager.state.destination);
+                if (remaining < 60 && fleet.id == myFleet.id) {
+                    if (remaining < 10) {
+                        document.title = '❗️' + pageTitle;
+                    } else {
+                        document.title = '🚀' + pageTitle;
+                    }
+                }
+                let text = timeDisplay(remaining);
+                if (fleet.moving) {
+                    text = '▶️ ' + text;
+                }
+                $('#fleet-' + fleet.id).text(text);
             });
         }
 
