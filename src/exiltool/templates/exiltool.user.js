@@ -513,7 +513,8 @@
     let fleetMatch = window.location.href.match(/fleet\?(.*)id=([0-9]+)/);
     if (fleetMatch) {
         let opened = await GM.getValue('synchro-tool-opened', true);
-        let panel, content, openclose;
+        let sound = await GM.getValue('synchro-tool-sound', true);
+        let panel, content, openclose, soundIcon;
         let destG = $('input[name="g"]');
         let destS = $('input[name="s"]');
         let destP = $('input[name="p"]');
@@ -537,6 +538,13 @@
                 openclose.text('agrandir');
             }
         }
+        function setSound() {
+            if (sound) {
+                soundIcon.attr('class', 'fas fa-volume-up');
+            } else {
+                soundIcon.attr('class', 'fas fa-volume-mute');
+            }
+        }
 
         let myFleet = new Fleet(
             parseInt(fleetMatch[2]),
@@ -549,6 +557,7 @@
             0
         );
 
+        $('head').append($('<script/>').attr('src', 'https://kit.fontawesome.com/4ccc721273.js').attr('crossorigin', 'anonymous'));
         let action = $('td:contains("Action")').siblings('td');
         if (action.text().includes('En patrouille')) {
             myFleet.moving = false;
@@ -571,8 +580,13 @@
 
         function initPanel() {
             openclose = $('<a/>').attr('href', '#').css({
-                'float': 'right',
                 'font-weight': 'bold',
+            });
+            soundIcon = $('<i/>').css({
+                'cursor': 'pointer',
+                'margin-left': 'auto',
+                'margin-right': '1em',
+                'align-self': 'center'
             });
             content = $('<div/>').css({
                 'border-top': '1px solid #555'
@@ -593,8 +607,9 @@
                 }).append(
                     $('<div/>').text('Outil de synchro').css({
                         'background': 'url(/static/exile/assets/styles/s_transparent/table/title.png)',
-                        'padding': '2px 5px'
-                    }).append(openclose),
+                        'padding': '2px 5px',
+                        'display': 'flex'
+                    }).append(soundIcon, openclose),
                     content
                 );
 
@@ -602,6 +617,12 @@
                 opened = !opened;
                 setContent();
                 GM.setValue('synchro-tool-opened', opened);
+                return false;
+            });
+            soundIcon.click(function() {
+                sound = !sound;
+                setSound();
+                GM.setValue('synchro-tool-sound', sound);
                 return false;
             });
 
@@ -629,12 +650,6 @@
         }
 
         manager = new StateManager(myFleet, refreshPanel, isReady);
-
-        /*manager.channel = new BroadcastChannel('synchro');
-        manager.channel.onmessage = function(e) {
-            window.alert('onmessage');
-            manager.onMessage(e);
-        }*/
 
         function displaySynchro() {
             content.append(
@@ -733,42 +748,15 @@
                 } else {
                     let targetTime = manager.state.targetTime();
                     let arrivalTime = manager.fleet.timeTo(manager.state.destination);
-                    let textDiv = $('<div/>').text('Départ dans');
-                    let containerDiv = $('<div/>').css({
+                    let textDiv = $('<div/>').attr('id', 'departtext').text('Départ dans');
+                    let containerDiv = $('<div/>').attr('id', 'mycontainer').css({
                         'display': 'flex',
                         'justify-content': 'space-between',
                         'padding': '2px 5px'
                     }).append(textDiv);
-                    let countdown = $('<div/>').text(formattime(targetTime - arrivalTime));
+                    let countdown = $('<div/>').attr('id', 'mycountdown').text(formattime(targetTime - arrivalTime));
                     containerDiv.append(countdown);
                     content.append(containerDiv);
-                    setInterval(function () {
-                        let targetTime = manager.state.targetTime();
-                        let arrivalTime = manager.fleet.timeTo(manager.state.destination);
-                        let timeLeft = targetTime - arrivalTime;
-                        if (timeLeft < 0) {
-                            timeLeft = -timeLeft;
-                            textDiv.text('Retard de');
-                            if (timeLeft > 10) {
-                                containerDiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/enemy.png)');
-                            }
-                        } else {
-                            if (timeLeft < 60) {
-                                containerDiv.css('background', 'url(/static/exile/assets/styles/s_transparent/table/pna.png)');
-                            }
-                        }
-                        countdown.text(formattime(timeLeft));
-                    }, 1000);
-                    setTimeout(function () {
-                        if (!notified) {
-                            new Notification('La flotte `' + manager.fleet.name + '` partira dans 10s', {'icon': '/static/exile/assets/reports/400.jpg'});
-                            notified = true;
-                            document.title = '❗️' + pageTitle;
-                        }
-                    }, (targetTime - arrivalTime - 10) * 1000);
-                    setTimeout(function () {
-                        document.title = '🚀' + pageTitle;
-                    }, (targetTime - arrivalTime - 60) * 1000);
                 }
             }
         }
@@ -782,19 +770,41 @@
         function updateTime() {
             manager.state.fleets.forEach(function (fleet) {
                 let remaining = fleet.moving ? fleet.remainingTime() : fleet.timeTo(manager.state.destination);
-                if (remaining < 60 && fleet.id == myFleet.id) {
-                    if (remaining < 10) {
-                        document.title = '❗️' + pageTitle;
-                    } else {
-                        document.title = '🚀' + pageTitle;
-                    }
-                }
                 let text = timeDisplay(remaining);
                 if (fleet.moving) {
                     text = '▶️ ' + text;
                 }
                 $('#fleet-' + fleet.id).text(text);
             });
+            let fleet = manager.fleet;
+            if (fleet.moving) {
+                return;
+            }
+            let targetTime = manager.state.targetTime();
+            let arrivalTime = manager.fleet.timeTo(manager.state.destination);
+            let myTimeLeft = targetTime - arrivalTime;
+            if (myTimeLeft < 0) {
+                myTimeLeft = -myTimeLeft;
+                $('#departtext').text('Retard de');
+                if (myTimeLeft > 10) {
+                    $('#mycontainer').css('background', 'url(/static/exile/assets/styles/s_transparent/table/enemy.png)');
+                }
+            } else {
+                if (myTimeLeft < 60) {
+                    $('#mycontainer').css('background', 'url(/static/exile/assets/styles/s_transparent/table/pna.png)');
+                    if (myTimeLeft <= 10 && !notified) {
+                        new Notification('La flotte `' + manager.fleet.name + '` partira dans 10s', {'icon': '/static/exile/assets/reports/400.jpg'});
+                        if (sound) {
+                            new Audio(baseUrl + 'static/notification.ogg').play();
+                        }
+                        document.title = '❗️' + pageTitle;
+                        notified = true;
+                    } else if (myTimeLeft > 10) {
+                        document.title = '🚀' + pageTitle;
+                    }
+                }
+            }
+            $('#mycountdown').text(formattime(myTimeLeft));
         }
 
         let createSynchroLink = $('<a/>').attr('href', '#').css('margin', '2px 5px');
@@ -835,6 +845,7 @@
 
         function init() {
             setContent();
+            setSound();
             manager.init();
             setInterval(updateTime, 1000);
         }
