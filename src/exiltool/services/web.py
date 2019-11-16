@@ -40,7 +40,8 @@ class WebService:
     def map(self):
         galaxy = int(request.args.get('g', 1))
         sector = int(request.args.get('s', 1))
-        sector = self.converter.sector_to_ui(self.sectors.get_sector(galaxy, sector))
+        all_resa = list(self.resas.get_all())
+        sector = self.converter.sector_to_ui(self.sectors.get_sector(galaxy, sector), all_resa)
         return render_template('map.html', sector=sector)
 
     @route('/resa')

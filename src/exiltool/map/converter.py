@@ -1,26 +1,33 @@
-from typing import Optional
+from typing import Optional, List
 
 from exiltool.map.model.domain import Sector, Place, Planet, PlaceType, PlaceOwner, OrbitFleet
 from exiltool.map.model.js import JsPlace, JsPlanet, JsOrbitFleet
 from exiltool.map.model.ui import UiSector, UiPlace, UiPlanet
 from exiltool.map.tools import compute_prod
+from exiltool.model.resa import Resa
 
 ignored_specials = ['Filon de minerai', 'Gisements d\'hydrocarbure']
 
 
 class MapConverter:
-    def sector_to_ui(self, sector: Sector) -> UiSector:
-        places = [self.place_to_ui(place) for place in sector.places]
+    def sector_to_ui(self, sector: Sector, resas: List[Resa] = None) -> UiSector:
+        places = [self.place_to_ui(place, resas) for place in sector.places]
         return UiSector(sector.galaxy, sector.sector, places)
 
-    def place_to_ui(self, place: Place) -> UiPlace:
+    def place_to_ui(self, place: Place, resas: List[Resa] = None) -> UiPlace:
         planet = self.planet_to_ui(place.planet) if place.planet else None
         foss = None
         if place.orbit:
             for fleet in place.orbit:
                 if fleet.name == 'Les fossoyeurs':
                     foss = fleet.signature
-        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet, place.specials, foss)
+        resa = None
+        if resas:
+            for r in resas:
+                if r.galaxy == place.galaxy and r.sector == place.sector and r.position == place.position:
+                    resa = r.username
+        return UiPlace(place.galaxy, place.sector, place.position, place.category.name, planet, place.specials, foss,
+                       resa)
 
     def planet_to_ui(self, planet: Planet) -> UiPlanet:
         owner = ''

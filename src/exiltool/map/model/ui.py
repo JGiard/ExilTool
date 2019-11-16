@@ -17,7 +17,7 @@ class UiPlanet:
 
 class UiPlace:
     def __init__(self, galaxy: int, sector: int, position: int, category: str, planet: Optional[UiPlanet] = None,
-                 specials: List[str] = None, foss: Optional[int] = None):
+                 specials: List[str] = None, foss: Optional[int] = None, resa: Optional[str] = None):
         self.galaxy = galaxy
         self.sector = sector
         self.position = position
@@ -25,6 +25,7 @@ class UiPlace:
         self.planet = planet
         self.specials = specials or []
         self.foss = foss
+        self.resa = resa
 
     @property
     def name(self) -> str:

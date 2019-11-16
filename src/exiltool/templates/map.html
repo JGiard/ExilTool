@@ -139,7 +139,11 @@
                             </div>
                         </div>
                         <div class="owner">
-                            {{ place.planet.owner }}
+                            {% if place.planet.owner %}
+                                {{ place.planet.owner }}
+                            {% elif place.resa %}
+                                [resa] {{ place.resa }}
+                            {% endif %}
                         </div>
                         <div class="specials">
                         {% for special in place.specials %}
