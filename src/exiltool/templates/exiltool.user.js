@@ -558,16 +558,16 @@
         );
 
         $('head').append($('<script/>').attr('src', 'https://kit.fontawesome.com/4ccc721273.js').attr('crossorigin', 'anonymous'));
-        let action = $('td:contains("Action")').siblings('td');
+        let action = $('td:contains("Action")').siblings('td').eq(0);
         if (action.text().includes('En patrouille')) {
             myFleet.moving = false;
-            let posMatch = action.find('a').text().match(/([0-9]+).([0-9]+).([0-9]+)/);
+            let posMatch = action.find('a').text().match(/([0-9]+)\.([0-9]+)\.([0-9]+)/);
             myFleet.position = new Position(parseInt(posMatch[1]), parseInt(posMatch[2]), parseInt(posMatch[3]));
         } else if (action.text().includes('En transit')) {
             myFleet.moving = true;
-            let posMatch = action.find('a:contains("(")').eq(0).text().match(/([0-9]+).([0-9]+).([0-9]+)/);
+            let posMatch = action.find('a:contains("(")').eq(0).text().match(/([0-9]+)\.([0-9]+)\.([0-9]+)/);
             myFleet.position = new Position(parseInt(posMatch[1]), parseInt(posMatch[2]), parseInt(posMatch[3]));
-            posMatch = action.find('a:contains("(")').eq(1).text().match(/([0-9]+).([0-9]+).([0-9]+)/);
+            posMatch = action.find('a:contains("(")').eq(1).text().match(/([0-9]+)\.([0-9]+)\.([0-9]+)/);
             myFleet.destination = new Position(parseInt(posMatch[1]), parseInt(posMatch[2]), parseInt(posMatch[3]));
             for (let i = 0; i < 10; i++) {
                 let text = action.find('#cntdwn' + i).text();
