@@ -14,6 +14,7 @@ class Ship(Enum):
     fm = ('Frégate à missiles', 50)
     croiseur = ('Croiseur', 68)
     cc = ('Croiseur de combat', 120)
+    ce = ('Croiseur d\'élite', 120)
 
     def __init__(self, display_name: str, signature: int):
         self.display_name = display_name
